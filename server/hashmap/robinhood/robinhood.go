@@ -1,0 +1,155 @@
+package robinhood
+
+import (
+	"encoding/json"
+	"fmt"
+	"hash/fnv"
+
+	"distributed-hashing/server/logger"
+)
+
+var LOG = logger.InitLogger("Logs/hashmap.log")
+
+func createHashMap(maxLoadFactor float64, defaultCapacity int) *HashMap {
+	hashmap := &HashMap{
+		table:      make([]*entry, defaultCapacity),
+		loadFactor: maxLoadFactor,
+	}
+	return hashmap
+
+}
+
+func Hash(key string) uint32 {
+	h := fnv.New32a()
+	h.Write([]byte(key))
+	return h.Sum32()
+}
+
+func (h *HashMap) putInternal(key string, value interface{}, convertVal bool) error {
+	valueBytes, err := json.Marshal(value)
+	if err != nil {
+		LOG.Error(err, "error occured when val converted into the json ")
+		return err
+	}
+	newEntryAdress := &entry{Key: key, Value: valueBytes, Tombstone: false, Dist: 0}
+
+	hashVal := Hash(key)
+	ind := int(hashVal) % len(h.table)
+
+	for {
+		curr := h.table[ind]
+		if curr == nil || curr.Tombstone {
+			h.table[ind] = newEntryAdress
+			h.size++
+			return nil
+		}
+
+		if curr.Key == key {
+			newEntryAdress.Dist = curr.Dist
+			h.table[ind] = newEntryAdress
+			return nil
+
+		}
+		if curr.Dist < newEntryAdress.Dist {
+			h.table[ind], newEntryAdress = newEntryAdress, h.table[ind]
+		}
+		newEntryAdress.Dist++
+		ind = (ind + 1) % len(h.table)
+	}
+	LOG.Error(nil, "Not reached this pos")
+	return nil
+}
+
+func (h *HashMap) Put(key string, value interface{}) error {
+	h.mutex.Lock()
+	defer h.mutex.Unlock()
+	if float64(h.size+1)/float64(len(h.table)) >= h.loadFactor {
+		h.resize()
+	}
+	return h.putInternal(key, value, true)
+}
+
+func (h *HashMap) Get(key string) ([]byte, error) {
+	h.mutex.RLock()
+	defer h.mutex.RUnlock()
+	hashVal := Hash(key)
+	ind := int(hashVal) % len(h.table)
+
+	dist := 0
+	for {
+		curr := h.table[ind]
+		if curr == nil {
+			err := fmt.Errorf("key not found", key)
+			LOG.Error(err, "key not found", key)
+			return nil, err
+		}
+		if curr.Key == key && curr.Tombstone == false {
+			return curr.Value, nil
+		}
+		if curr.Dist < dist {
+			err := fmt.Errorf("key not found", key)
+			LOG.Error(err, "key not found", key)
+			return nil, err
+		}
+		dist++
+		ind = (ind + 1) % len(h.table)
+	}
+}
+func (h *HashMap) Delete(key string) error {
+	h.mutex.Lock()
+	defer h.mutex.Unlock()
+	hashVal := Hash(key)
+
+	ind := int(hashVal) % len(h.table)
+
+	dist := 0
+
+	for {
+		curr := h.table[ind]
+		if curr == nil {
+			err := fmt.Errorf("key not found", key)
+			LOG.Error(err, "key not found", key)
+			return err
+		}
+		if curr.Key == key && curr.Tombstone == false {
+			curr.Tombstone = true
+			h.size--
+			return nil
+		}
+		if dist > curr.Dist {
+			err := fmt.Errorf("key %v not found", key)
+			LOG.Error(err, "")
+			return err
+		}
+		dist++
+		ind = (ind + 1) % len(h.table)
+	}
+	return nil
+
+}
+
+func (h *HashMap) resize() {
+	newCapacity := len(h.table) * 2
+	newTable := make([]*entry, newCapacity)
+	oldTable := h.table
+	h.table = newTable
+	h.size = 0
+	for _, row := range oldTable {
+		if row != nil && !row.Tombstone {
+			var val interface{}
+			json.Unmarshal(row.Value, &val)
+			h.putInternal(row.Key, val, false)
+		}
+	}
+
+}
+
+func (h *HashMap) PrintMap() {
+	for _, row := range h.table {
+		if row != nil {
+			LOG.Info("key", row.Key, "Distance", row.Dist, "Tombstone", row.Tombstone)
+			fmt.Println("key  ", row.Key, "Distance  ", row.Dist, "Tombstone   ", row.Tombstone)
+		}
+
+	}
+}

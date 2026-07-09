@@ -10,7 +10,7 @@ import (
 
 var LOG = logger.InitLogger("Logs/hashmap.log")
 
-func createHashMap(maxLoadFactor float64, defaultCapacity int) *HashMap {
+func CreateHashMap(maxLoadFactor float64, defaultCapacity int) *HashMap {
 	hashmap := &HashMap{
 		table:      make([]*entry, defaultCapacity),
 		loadFactor: maxLoadFactor,

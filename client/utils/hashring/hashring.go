@@ -81,7 +81,12 @@ func (h *HashRing) GetNode(node string) string {
 		LOG.Info("No nodes in the hash ring", node)
 		return ""
 	}
+	if len(h.sortedhashes) == 0 {
+		LOG.Info("No sorted hashes in the hash ring", node)
+		return ""
+	}
 	if node == "" {
+		LOG.Info("Empty node name provided", node)
 		return ""
 	}
 	hashKey := ConvertKeyToHash(node)

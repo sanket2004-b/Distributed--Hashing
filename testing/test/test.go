@@ -23,7 +23,7 @@ func UnitTesting() {
 
 	var wg sync.WaitGroup
 	fmt.Printf("\n********Adding Keys to HashMap*****\n")
-	for i := 0; i < 8; i++ {
+	for i := 10; i < 22; i++ {
 		wg.Add(1)
 		go func(i int) {
 			defer wg.Done()
@@ -37,7 +37,7 @@ func UnitTesting() {
 				fmt.Printf("Error while setting :key: %v: %v \n", key, err.Error())
 			}
 		}(i)
-		//go putKeyGoroutine (i)
+
 	}
 	wg.Wait()
 }

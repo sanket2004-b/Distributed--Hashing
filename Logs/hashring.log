@@ -42,3 +42,5 @@
 2026/07/15 11:00:42 hashring.go:51: "level"=0 "msg"="Node %s added to the hash ring with %d virtual nodes" "hypervm-3"=10
 2026/07/15 11:03:31 hashring.go:94: "level"=0 "msg"="Node %s found for key %s" "hypervm-1"="user123"
 2026/07/15 11:13:45 hashring.go:94: "level"=0 "msg"="Node %s found for key %s" "hypervm-1"="user123"
+2026/07/15 11:23:32 hashring.go:94: "level"=0 "msg"="Node %s found for key %s" "hypervm-1"="user123"
+2026/07/15 11:24:48 hashring.go:94: "level"=0 "msg"="Node %s found for key %s" "hypervm-2"="user23"

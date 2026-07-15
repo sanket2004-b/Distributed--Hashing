@@ -23,7 +23,7 @@ func UnitTesting() {
 
 	var wg sync.WaitGroup
 	fmt.Printf("\n********Adding Keys to HashMap*****\n")
-	for i := 10; i < 22; i++ {
+	for i := 21; i < 32; i++ {
 		wg.Add(1)
 		go func(i int) {
 			defer wg.Done()

@@ -17,8 +17,8 @@ var NodeToUrlMaps = map[string]string{
 }
 
 type keyValRequest struct {
-	Key   string `json:"key"`
-	Value string `json:"value"`
+	Key   string      `json:"key"`
+	Value interface{} `json:"value"`
 }
 
 var ring *hashring.HashRing
@@ -38,7 +38,7 @@ func SetKeyValue(key string, value interface{}) error {
 
 	keyValReq := keyValRequest{
 		Key:   key,
-		Value: value.(string),
+		Value: value,
 	}
 
 	data, err := json.Marshal(keyValReq)

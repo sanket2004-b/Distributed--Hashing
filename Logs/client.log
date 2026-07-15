@@ -1,0 +1,26 @@
+2026/07/14 14:42:32 handler.go:35: "level"=0 "msg"="Listening on address: %v" ":8083"="<no-value>"
+2026/07/14 14:43:46 handler.go:58: "msg"="Error decoding request body: %v" "error"="EOF" "<non-string-key: \"EOF\">"="<no-value>"
+2026/07/14 15:23:50 handler.go:35: "level"=0 "msg"="Listening on address: %v" ":8083"="<no-value>"
+2026/07/14 15:28:22 handler.go:58: "msg"="Error decoding request body: %v" "error"="invalid character '\\\\' looking for beginning of object key string" "<non-string-key: \"invalid charact>"="<no-value>"
+2026/07/14 15:29:49 handler.go:58: "msg"="Error decoding request body: %v" "error"="invalid character 'd' looking for beginning of object key string" "<non-string-key: \"invalid charact>"="<no-value>"
+2026/07/14 18:01:19 handler.go:35: "level"=0 "msg"="Listening on address: %v" ":8083"="<no-value>"
+2026/07/14 18:10:32 handler.go:35: "level"=0 "msg"="Listening on address: %v" ":8083"="<no-value>"
+2026/07/14 18:12:26 handler.go:58: "msg"="Error decoding request body: %v" "error"="invalid character 'n' looking for beginning of object key string" "<non-string-key: \"invalid charact>"="<no-value>"
+2026/07/14 18:20:52 handler.go:35: "level"=0 "msg"="Listening on address: %v" ":8083"="<no-value>"
+2026/07/14 18:26:33 handler.go:35: "level"=0 "msg"="Listening on address: %v" ":8083"="<no-value>"
+2026/07/14 18:27:43 handler.go:58: "msg"="Error decoding request body: %v" "error"="invalid character 'n' looking for beginning of object key string" "<non-string-key: \"invalid charact>"="<no-value>"
+2026/07/14 18:41:15 handler.go:35: "level"=0 "msg"="Listening on address: %v" ":8080"="<no-value>"
+2026/07/15 10:42:28 handler.go:35: "level"=0 "msg"="Listening on address: %v" ":8080"="<no-value>"
+2026/07/15 10:58:48 handler.go:35: "level"=0 "msg"="Listening on address: %v" ":8080"="<no-value>"
+2026/07/15 11:00:42 handler.go:35: "level"=0 "msg"="Listening on address: %v" ":8080"="<no-value>"
+2026/07/15 11:00:52 handler.go:58: "msg"="Error decoding request body: %v" "error"="invalid character '\\\\' looking for beginning of object key string" "<non-string-key: \"invalid charact>"="<no-value>"
+2026/07/15 11:01:46 handler.go:58: "msg"="Error decoding request body: %v" "error"="invalid character 'd' looking for beginning of object key string" "<non-string-key: \"invalid charact>"="<no-value>"
+2026/07/15 11:03:31 methods.go:50: "level"=0 "msg"="Sending request to node %s at URL %s with data: %s" "hypervm-1"="http://localhost:8081/set" "{\"key\":\"user123\",\"value\":{\"data\":{\"age\":21,\"meta\":{\"active\":true,\"lastLogin\":\"2026-01-01T12:00:00Z\"},\"name\":\"Sanket\",\"tags\":[\"go\",\"dev\"]}}}"="<no-value>"
+2026/07/15 11:03:31 methods.go:55: "msg"="Error while sending request to node %s at URL %s: %v" "error"="Post \"http://localhost:8081/set\": dial tcp [::1]:8081: connectex: No connection could be made because the target machine actively refused it." "hypervm-1"="http://localhost:8081/set" "<non-string-key: \"Post \\\"http://l>"="<no-value>"
+2026/07/15 11:03:31 handler.go:63: "level"=0 "msg"="Set key-value pair for key: %s, value: %v" "user123"={"data"={"name"="Sanket" "age"=21 "tags"=["go" "dev"] "meta"={"active"=true "lastLogin"="2026-01-01T12:00:00Z"}}}
+2026/07/15 11:03:31 handler.go:65: "msg"="Error setting key-value pair: %v" "error"="Post \"http://localhost:8081/set\": dial tcp [::1]:8081: connectex: No connection could be made because the target machine actively refused it." "<non-string-key: \"Post \\\"http://l>"="<no-value>"
+2026/07/15 11:13:45 methods.go:50: "level"=0 "msg"="Sending request to node %s at URL %s with data: %s" "hypervm-1"="http://localhost:8081/set" "{\"key\":\"user123\",\"value\":{\"data\":{\"age\":21,\"meta\":{\"active\":true,\"lastLogin\":\"2026-01-01T12:00:00Z\"},\"name\":\"Sanket\",\"tags\":[\"go\",\"dev\"]}}}"="<no-value>"
+2026/07/15 11:13:45 methods.go:58: "level"=0 "msg"="Response for store key: %s, response: %v" "user123"={"Status"="200 OK" "StatusCode"=200 "Proto"="HTTP/1.1" "ProtoMajor"=1 "ProtoMinor"=1 "Header"={"Date"=["Wed, 15 Jul 2026 05:43:45 GMT"] "Content-Length"=["28"] "Content-Type"=["text/plain; charset=utf-8"]} "Body"={} "ContentLength"=28 "TransferEncoding"=[] "Close"=false "Uncompressed"=false "Trailer"={} "Request"={"Method"="POST" "URL"="http://localhost:8081/set" "Proto"="HTTP/1.1" "ProtoMajor"=1 "ProtoMinor"=1 "Header"={"Content-Type"=["application/json"]} "Body"={"Reader"=""} "GetBody"="<unhandled-func>" "ContentLength"=139 "TransferEncoding"=[] "Close"=false "Host"="localhost:8081" "Form"={} "PostForm"={} "MultipartForm"=null "Trailer"={} "RemoteAddr"="" "RequestURI"="" "TLS"=null "Cancel"="<unhandled-chan>" "Response"=null "Pattern"=""} "TLS"=null}
+2026/07/15 11:13:45 methods.go:59: "level"=0 "msg"="Successfully sent request to node %s at URL %s" "hypervm-1"="http://localhost:8081/set"
+2026/07/15 11:13:45 handler.go:63: "level"=0 "msg"="Set key-value pair for key: %s, value: %v" "user123"={"data"={"tags"=["go" "dev"] "meta"={"active"=true "lastLogin"="2026-01-01T12:00:00Z"} "name"="Sanket" "age"=21}}
+2026/07/15 11:13:45 handler.go:71: "level"=0 "msg"="Successfully set key-value pair for key: %s, value: %v" "user123"={"data"={"name"="Sanket" "age"=21 "tags"=["go" "dev"] "meta"={"active"=true "lastLogin"="2026-01-01T12:00:00Z"}}}

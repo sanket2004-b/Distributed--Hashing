@@ -5,6 +5,7 @@ import (
 	"distributed-hashing/server/logger"
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"sync"
 )
@@ -57,8 +58,13 @@ func (pool *WorkerPool) AddTask(task Task) {
 
 func CreateHandler(port string) {
 	pool = CreateWorkerPool(20, hm)
+	// fmt.Printf("\nListening on address: :%v\n", port)
 
 	http.HandleFunc("/set", handleSet)
+	address := ":" + port
+	fmt.Printf("Listening on address: %v", address)
+	LOG.Info("Listening on", "address", address)
+	log.Fatal(http.ListenAndServe(address, nil))
 }
 
 func handleSet(w http.ResponseWriter, r *http.Request) {
@@ -66,7 +72,7 @@ func handleSet(w http.ResponseWriter, r *http.Request) {
 
 	err := json.NewDecoder(r.Body).Decode(&req)
 
-	if err != nil && req.Key == "" {
+	if err != nil || req.Key == "" {
 		LOG.Error(err, "Invalid json or missing data", req.Key)
 		http.Error(w, "Invalid json or missing data", http.StatusBadRequest)
 		return

@@ -26,12 +26,16 @@ var setCmd = `curl -X POST "http://localhost:8080/set?key=user123" \
            }
          }'`
 
+var getCMD = `curl.exe GET "http://localhost:8080/get?key=user123"`
+
 func CreateHandler(port string) {
 	http.HandleFunc("/set", HandleSet)
+	http.HandleFunc("/get", handleGet)
 	address := ":" + port
 	fmt.Printf("\nListening on address: %v\n", address)
 
 	fmt.Printf("Format to store key-value pair command\n %v\n \n", setCmd)
+	fmt.Printf("Format to get the data from server using the key commnad is", getCMD)
 	LOG.Info("Listening on address: %v", address)
 
 	log.Fatal(http.ListenAndServe(address, nil))
@@ -71,5 +75,29 @@ func HandleSet(w http.ResponseWriter, r *http.Request) {
 	LOG.Info("Successfully set key-value pair for key: %s, value: %v", key, value)
 	w.WriteHeader(http.StatusOK)
 	fmt.Fprintf(w, "Successfully set key-value pair for key: %s, value: %v", key, value)
+
+}
+
+func handleGet(w http.ResponseWriter, r *http.Request) {
+	key := r.URL.Query().Get("key")
+
+	if key == "" {
+		LOG.Error(nil, "key is missing or wrong req", "key", key)
+		http.Error(w, "Missing key", http.StatusBadRequest)
+		return
+
+	}
+
+	data, err := methods.GetKeyValue(key)
+
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusNotFound)
+		return
+	}
+
+	LOG.Info("successfully got value from the hashMap for ", "key is ", key)
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	w.Write(data)
 
 }

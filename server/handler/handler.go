@@ -100,3 +100,44 @@ func handleSet(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, fmt.Sprintf("Error occurred while setting key %s: %v", req.Key, err), http.StatusInternalServerError)
 	}
 }
+
+func handleGet(w http.ResponseWriter, r *http.Request) {
+	key := r.URL.Query().Get("key")
+
+	if key == "" {
+		LOG.Error(nil, "missing key", "key", key)
+		http.Error(w, "Missing key", http.StatusBadRequest)
+		return
+	}
+
+	LOG.Info("Fetch in", "key", key)
+
+	task := Task{
+		Operation: "GET",
+		Key:       key,
+		Result:    make(chan interface{}),
+		Err:       make(chan error),
+	}
+
+	LOG.Info(" for fetching ", "key", key)
+	pool.AddTask(task)
+
+	select {
+	case data := <-task.Result:
+		val := data.([]byte)
+
+		if !json.Valid(val) {
+			http.Error(w, fmt.Sprintf("Invalid JSON stored for key: %v", key), http.StatusInternalServerError)
+			return
+		}
+		LOG.Info("successfully got value from hashmap for ", "key", key)
+		w.Header().Set("Content-Type", "application/json")
+
+		w.WriteHeader(http.StatusOK)
+		w.Write(val)
+	case err := <-task.Err:
+
+		LOG.Error(err, "Error while fetching", "key ", key)
+		http.Error(w, err.Error(), http.StatusNotFound)
+	}
+}

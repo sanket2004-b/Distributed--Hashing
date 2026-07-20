@@ -40,4 +40,27 @@ func UnitTesting() {
 
 	}
 	wg.Wait()
+	fmt.Printf("\n******************************\n\n")
+	fmt.Printf("********Fetching Keys from hashmap*****\n")
+
+	for i := 0; i < 8; i++ {
+		wg.Add(1)
+
+		getKeyGoRoutine := func(i int) {
+			defer wg.Done()
+			key := "user" + strconv.Itoa(i)
+			data, err := methods.GetKeyValue(key)
+
+			if err != nil {
+				fmt.Printf("key %v not found", key)
+				return
+			}
+
+			fmt.Printf("Fetched key: %v value : %v\n", key, string(data))
+
+		}
+		go getKeyGoRoutine(i)
+	}
+	wg.Wait()
+
 }

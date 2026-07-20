@@ -160,3 +160,6 @@
 2026/07/15 15:20:29 handler.go:94: "level"=0 "msg"="Key " "user30"=" set successfully"
 2026/07/15 15:20:29 handler.go:94: "level"=0 "msg"="Key " "user24"=" set successfully"
 2026/07/15 15:20:29 handler.go:94: "level"=0 "msg"="Key " "user26"=" set successfully"
+2026/07/20 15:32:18 handler.go:66: "level"=0 "msg"="Listening on" "address"=":8081"
+2026/07/20 15:32:47 handler.go:66: "level"=0 "msg"="Listening on" "address"=":8082"
+2026/07/20 15:32:53 handler.go:66: "level"=0 "msg"="Listening on" "address"=":8083"

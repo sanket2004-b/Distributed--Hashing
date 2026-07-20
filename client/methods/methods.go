@@ -5,6 +5,8 @@ import (
 	"distributed-hashing/client/utils/hashring"
 	"distributed-hashing/client/utils/logger"
 	"encoding/json"
+	"fmt"
+	"io"
 	"net/http"
 )
 
@@ -59,4 +61,51 @@ func SetKeyValue(key string, value interface{}) error {
 	LOG.Info("Successfully sent request to node %s at URL %s", node, nodeUrl)
 	res.Body.Close()
 	return nil
+}
+
+func GetKeyValue(key string) ([]byte, error) {
+	node := ring.GetNode(key)
+	if key == "" {
+		LOG.Info("key is not find")
+		fmt.Printf("empty key")
+	}
+
+	if node == "" {
+		err := fmt.Errorf("Unable to get node for key %s", key)
+		LOG.Error(err, "Failed in getting node for key")
+		return nil, err
+	}
+	nodeUrl := NodeToUrlMaps[node] + "/get?key=" + key
+
+	LOG.Info("calling to thr url ::--", nodeUrl)
+
+	resp, err := http.Get(nodeUrl)
+
+	if err != nil {
+		LOG.Error(err, "Error while calling", "url", nodeUrl)
+
+		return nil, err
+	}
+
+	defer resp.Body.Close()
+
+	if resp.StatusCode == http.StatusNotFound {
+		err := fmt.Errorf("key not found %s", key)
+		LOG.Error(err, "Failed to get the key")
+		return nil, err
+	} else if resp.StatusCode == http.StatusOK {
+		body, err := io.ReadAll(resp.Body)
+
+		if err != nil {
+			LOG.Error(err, "Faliled to the get the data from  the response body")
+
+		}
+		LOG.Info("JSON body is ::  ", "key is:  ", key, "  body : ", string(body))
+
+		return body, nil
+	} else {
+		err := fmt.Errorf("Key %v not found, invalid statuscode: %v", key, resp.StatusCode)
+		return nil, err
+	}
+
 }

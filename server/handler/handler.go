@@ -45,10 +45,21 @@ func (pool *WorkerPool) worker(id int) {
 			} else {
 				task.Result <- fmt.Sprintf("Key %s set successfully", task.Key)
 			}
+		case "GET":
+			data, err := pool.HM.Get(task.Key)
+
+			if err != nil {
+				task.Err <- fmt.Errorf("key %s not found : %v", task.Key, err)
+
+			} else {
+				task.Result <- data
+			}
+
 		default:
 			task.Err <- fmt.Errorf("wrong menthod called %s", task.Operation)
 
 		}
+
 	}
 }
 
@@ -61,6 +72,7 @@ func CreateHandler(port string) {
 	// fmt.Printf("\nListening on address: :%v\n", port)
 
 	http.HandleFunc("/set", handleSet)
+	http.HandleFunc("/get", handleGet)
 	address := ":" + port
 	fmt.Printf("Listening on address: %v", address)
 	LOG.Info("Listening on", "address", address)

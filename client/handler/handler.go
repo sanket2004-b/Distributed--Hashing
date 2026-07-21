@@ -12,22 +12,10 @@ import (
 // import "distributed-hashing/server/logger"
 
 var LOG = logger.InitLogger("Logs/client.log")
-var setCmd = `curl -X POST "http://localhost:8080/set?key=user123" \
-     -H "Content-Type: application/json" \
-     -d '{
-           "data": {
-               "name": "Sanket",
-               "age": 21,
-               "tags": ["go", "dev"],
-               "meta": {
-                   "active": true,
-                   "lastLogin": "2026-01-01T12:00:00Z"
-               }
-           }
-         }'`
+var setCmd = `Invoke-RestMethod -Uri "http://localhost:8080/set?key=user10" -Method POST -ContentType "application/json" -Body '{"Name":"Sanket","Age":22}'`
 
-var getCMD = `curl.exe GET "http://localhost:8080/get?key=user123"`
-var deleteCMD = `curl.exe DELETE "http://localhost:8080/delete?key=user123"`
+var getCMD = `curl "http://localhost:8080/get?key=user123"`
+var deleteCMD = `curl.exe -X DELETE "http://localhost:8080/delete?key=user123"`
 
 func CreateHandler(port string) {
 	http.HandleFunc("/set", HandleSet)
@@ -36,9 +24,9 @@ func CreateHandler(port string) {
 	address := ":" + port
 	fmt.Printf("\nListening on address: %v\n", address)
 
-	fmt.Printf("Format to store key-value pair command\n %v\n \n", setCmd)
-	fmt.Printf("Format to get the data from server using the key commnad is", getCMD)
-	fmt.Printf("Format to delete the data from server using the key commnad is", deleteCMD)
+	fmt.Printf("Format to  POST store key-value pair command\n %v\n \n", setCmd)
+	fmt.Printf("\nFormat to GET the data from server using the key commnad is\n", getCMD)
+	fmt.Printf("\nFormat to DELETE the data from server using the key commnad is\n", deleteCMD)
 	LOG.Info("Listening on address: %v", address)
 
 	log.Fatal(http.ListenAndServe(address, nil))

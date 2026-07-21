@@ -54,6 +54,21 @@ func (pool *WorkerPool) worker(id int) {
 			} else {
 				task.Result <- data
 			}
+		case "DELETE":
+			_, err := pool.HM.Get(task.Key)
+
+			if err != nil {
+				task.Err <- fmt.Errorf("key %s not found : %v", task.Key, err)
+
+			} else {
+				err = hm.Delete(task.Key)
+				if err != nil {
+					task.Err <- fmt.Errorf("Kei %v is not delete due to : %v", task.Key, err)
+
+				} else {
+					task.Result <- fmt.Sprintf("Key : %v deleted from the hashmap::", task.Key)
+				}
+			}
 
 		default:
 			task.Err <- fmt.Errorf("wrong menthod called %s", task.Operation)
@@ -73,6 +88,7 @@ func CreateHandler(port string) {
 
 	http.HandleFunc("/set", handleSet)
 	http.HandleFunc("/get", handleGet)
+	http.HandleFunc("/delete", handleDelete)
 	address := ":" + port
 	fmt.Printf("Listening on address: %v", address)
 	LOG.Info("Listening on", "address", address)
@@ -152,4 +168,40 @@ func handleGet(w http.ResponseWriter, r *http.Request) {
 		LOG.Error(err, "Error while fetching", "key ", key)
 		http.Error(w, err.Error(), http.StatusNotFound)
 	}
+}
+
+func handleDelete(w http.ResponseWriter, r *http.Request) {
+	key := r.URL.Query().Get("key")
+
+	if key == "" {
+		LOG.Error(nil, "missing key", "key", key)
+
+		http.Error(w, "missing key", http.StatusBadRequest)
+
+		return
+	}
+
+	LOG.Info("Deleting", "key", key)
+
+	task := Task{
+		Operation: "DELETE",
+		Key:       key,
+		Result:    make(chan interface{}),
+		Err:       make(chan error),
+	}
+
+	LOG.Info("Adding task in pool for deleting", "key", key)
+
+	pool.AddTask(task)
+
+	select {
+	case result := <-task.Result:
+		LOG.Info("successfully delted key from the hashmap for ", "key", key)
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintf(w, " Deleted: key %v %s", key, result)
+	case err := <-task.Err:
+		LOG.Error(err, "Error while Deleting ", "key", key)
+		http.Error(w, err.Error(), http.StatusNotFound)
+	}
+
 }

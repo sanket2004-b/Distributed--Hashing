@@ -27,15 +27,18 @@ var setCmd = `curl -X POST "http://localhost:8080/set?key=user123" \
          }'`
 
 var getCMD = `curl.exe GET "http://localhost:8080/get?key=user123"`
+var deleteCMD = `curl.exe DELETE "http://localhost:8080/delete?key=user123"`
 
 func CreateHandler(port string) {
 	http.HandleFunc("/set", HandleSet)
 	http.HandleFunc("/get", handleGet)
+	http.HandleFunc("/delete", handleDelete)
 	address := ":" + port
 	fmt.Printf("\nListening on address: %v\n", address)
 
 	fmt.Printf("Format to store key-value pair command\n %v\n \n", setCmd)
 	fmt.Printf("Format to get the data from server using the key commnad is", getCMD)
+	fmt.Printf("Format to delete the data from server using the key commnad is", deleteCMD)
 	LOG.Info("Listening on address: %v", address)
 
 	log.Fatal(http.ListenAndServe(address, nil))
@@ -100,4 +103,25 @@ func handleGet(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	w.Write(data)
 
+}
+
+func handleDelete(w http.ResponseWriter, r *http.Request) {
+	key := r.URL.Query().Get("key")
+
+	if key == "" {
+		LOG.Error(nil, "missing key", "key", key)
+		http.Error(w, "Missing key", http.StatusBadRequest)
+		return
+	}
+
+	err := methods.DeleteKey(key)
+
+	if err != nil {
+		fmt.Printf("Error while deleting %v", key)
+		http.Error(w, err.Error(), http.StatusNotFound)
+		return
+	}
+	LOG.Info("successfully deleted the key from the hashmap key :: ", "key", key)
+	w.WriteHeader(http.StatusOK)
+	fmt.Fprintf(w, " delted key is : %v", key)
 }

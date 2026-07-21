@@ -109,3 +109,44 @@ func GetKeyValue(key string) ([]byte, error) {
 	}
 
 }
+
+func DeleteKey(key string) error {
+	node := ring.GetNode(key)
+
+	if node == "" {
+		err := fmt.Errorf("Unable to get node for %s", key)
+		LOG.Error(err, "Unable to geting node for key")
+		return err
+	}
+	nodeUrl := NodeToUrlMaps[node] + "/delete?key=" + key
+
+	LOG.Info("calling  ", "url", nodeUrl)
+
+	req, err := http.NewRequest(http.MethodDelete, nodeUrl, nil)
+
+	if err != nil {
+		LOG.Error(err, "error while req DELETE is Created ", nodeUrl)
+		return err
+	}
+
+	client := &http.Client{}
+
+	resp, err := client.Do(req)
+
+	if err != nil {
+		LOG.Error(err, "Error while calling delete req for ", "key", key)
+		return err
+	}
+
+	LOG.Info("Response ", "status", resp.Status, "key", key)
+	respBody, err := io.ReadAll(resp.Body)
+
+	if err != nil {
+		LOG.Error(err, "Error while deleting ", "key", key)
+		return err
+	}
+
+	LOG.Info("Response ", "Body", string(respBody))
+
+	return nil
+}
